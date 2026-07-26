@@ -27,7 +27,7 @@
     /* Header */
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
     .logo { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
-    .user-profile { display: flex; align-items: center; gap: 10px; }
+    .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
 
     /* Stats Grid */
@@ -39,9 +39,29 @@
 
     /* Actions */
     .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-    .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 0.9rem; }
+    .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 0.9rem; text-decoration: none; display: inline-block; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-warning { background: var(--warning); color: #000; }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25d366;
+      color: white;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 1000;
+      font-size: 0.9rem;
+    }
 
     /* Plans */
     .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
@@ -52,10 +72,21 @@
     /* Table */
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
     .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th, td { text-align: left; padding: 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
     th { color: var(--text-muted); font-weight: 600; }
+
+    /* Admin Panel Form */
+    #admin-panel {
+      display: none;
+      background: #111827;
+      border: 2px solid var(--warning);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; }
   </style>
 </head>
 <body>
@@ -63,49 +94,55 @@
   <div class="container">
     <header>
       <div class="logo">📈 TradeWithProfessional</div>
-      <div class="user-profile">
+      <!-- Tapping Member avatar opening admin auth -->
+      <div class="user-profile" onclick="openAdminModal()">
         <div class="avatar">M</div>
         <span style="font-weight: 600; font-size: 0.9rem;">Member</span>
       </div>
     </header>
 
+    <!-- ADMIN CONTROL PANEL (HIDDEN BY DEFAULT) -->
+    <div id="admin-panel">
+      <div class="section-title" style="color: var(--warning);">⚙️ Admin Management Panel</div>
+      <div class="form-group">
+        <label>Total Balance ($)</label>
+        <input type="number" id="input-balance" placeholder="e.g. 500">
+      </div>
+      <div class="form-group">
+        <label>Estimated Returns ($)</label>
+        <input type="number" id="input-returns" placeholder="e.g. 50">
+      </div>
+      <div class="form-group">
+        <label>Daily ROI (%)</label>
+        <input type="number" id="input-roi" placeholder="e.g. 2.5">
+      </div>
+      <button class="btn btn-warning" style="width: 100%;" onclick="saveAdminData()">Update User Dashboard</button>
+    </div>
+
+    <!-- MAIN DASHBOARD STATS -->
     <div class="grid-2">
       <div class="card">
         <label>Total Balance</label>
-        <div class="val">$0.00</div>
+        <div id="user-balance" class="val">$0.00</div>
         <div class="sub">Active Account</div>
         <div class="actions">
-          <button class="btn btn-primary" onclick="alert('Deposit feature coming soon!')">Deposit</button>
-          <button class="btn btn-secondary" onclick="alert('Withdraw feature coming soon!')">Withdraw</button>
+          <a href="https://wa.me/YOUR_PHONE_NUMBER?text=Hello%20Admin,%20I%20want%20to%20make%20a%20deposit" target="_blank" class="btn btn-primary">Deposit</a>
+          <a href="https://wa.me/YOUR_PHONE_NUMBER?text=Hello%20Admin,%20I%20want%20to%20request%20a%20withdrawal" target="_blank" class="btn btn-secondary">Withdraw</a>
         </div>
       </div>
 
       <div class="card">
         <label>Estimated Returns</label>
-        <div class="val" style="color: var(--success);">$0.00</div>
-        <div class="sub">Daily ROI: 0%</div>
+        <div id="user-returns" class="val" style="color: var(--success);">$0.00</div>
+        <div id="user-roi" class="sub">Daily ROI: 0%</div>
       </div>
     </div>
 
     <!-- FOREX TRADING CHART -->
     <div class="card">
       <div class="section-title">Live Forex Market</div>
-      <div class="tradingview-widget-container" style="height: 450px; width: 100%;">
-        <div class="tradingview-widget-container__widget" style="height: calc(100% - 32px); width: 100%;"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-        {
-          "autosize": true,
-          "symbol": "FX:EURUSD",
-          "interval": "D",
-          "timezone": "Etc/UTC",
-          "theme": "dark",
-          "style": "1",
-          "locale": "en",
-          "allow_symbol_change": true,
-          "calendar": false,
-          "support_host": "https://www.tradingview.com"
-        }
-        </script>
+      <div style="height: 450px; width: 100%;">
+        <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=FX%3AEURUSD&interval=D&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
     </div>
 
@@ -116,14 +153,14 @@
           <h4>Starter Tier</h4>
           <p>Daily ROI Yield • Flexible Term</p>
         </div>
-        <button class="btn btn-primary" style="padding: 8px 16px;">Select</button>
+        <a href="https://wa.me/YOUR_PHONE_NUMBER?text=Hello%20Admin,%20I%20want%20to%20select%20the%20Starter%20Tier" target="_blank" class="btn btn-primary" style="padding: 8px 16px;">Select</a>
       </div>
       <div class="plan-card">
         <div class="plan-info">
           <h4>Pro Trader Tier</h4>
           <p>High ROI Yield • Premium Benefits</p>
         </div>
-        <button class="btn btn-primary" style="padding: 8px 16px;">Select</button>
+        <a href="https://wa.me/YOUR_PHONE_NUMBER?text=Hello%20Admin,%20I%20want%20to%20select%20the%20Pro%20Trader%20Tier" target="_blank" class="btn btn-primary" style="padding: 8px 16px;">Select</a>
       </div>
     </div>
 
@@ -148,17 +185,55 @@
     </div>
   </div>
 
-  <!-- CRISP LIVE CHAT WIDGET -->
-  <script type="text/javascript">
-    window.$crisp = [];
-    window.CRISP_WEBSITE_ID = "YOUR_CRISP_WEBSITE_ID"; // Paste your Crisp ID here when ready
-    (function() {
-      d = document;
-      s = d.createElement("script");
-      s.src = "https://client.crisp.chat/l.js";
-      s.async = 1;
-      d.getElementsByTagName("head")[0].appendChild(s);
-    })();
+  <!-- FLOATING WHATSAPP ADMIN CONTACT BUTTON -->
+  <a href="https://wa.me/YOUR_PHONE_NUMBER?text=Hello%20Admin,%20I%20need%20assistance" class="whatsapp-btn" target="_blank">
+    💬 Contact Admin
+  </a>
+
+  <script>
+    // Load saved balances on startup
+    window.onload = function() {
+      const balance = localStorage.getItem('user_balance') || '0.00';
+      const returns = localStorage.getItem('user_returns') || '0.00';
+      const roi = localStorage.getItem('user_roi') || '0';
+
+      document.getElementById('user-balance').innerText = '$' + parseFloat(balance).toFixed(2);
+      document.getElementById('user-returns').innerText = '$' + parseFloat(returns).toFixed(2);
+      document.getElementById('user-roi').innerText = 'Daily ROI: ' + roi + '%';
+    };
+
+    // Open Admin Panel with Password
+    function openAdminModal() {
+      const password = prompt("Enter Admin Password:");
+      if (password === "1234") { // DEFAULT ADMIN PASSWORD IS 1234
+        const panel = document.getElementById('admin-panel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+      } else if (password !== null) {
+        alert("Incorrect Admin Password!");
+      }
+    }
+
+    // Save Admin Data to Dashboard
+    function saveAdminData() {
+      const newBalance = document.getElementById('input-balance').value;
+      const newReturns = document.getElementById('input-returns').value;
+      const newRoi = document.getElementById('input-roi').value;
+
+      if (newBalance !== "") {
+        localStorage.setItem('user_balance', newBalance);
+        document.getElementById('user-balance').innerText = '$' + parseFloat(newBalance).toFixed(2);
+      }
+      if (newReturns !== "") {
+        localStorage.setItem('user_returns', newReturns);
+        document.getElementById('user-returns').innerText = '$' + parseFloat(newReturns).toFixed(2);
+      }
+      if (newRoi !== "") {
+        localStorage.setItem('user_roi', newRoi);
+        document.getElementById('user-roi').innerText = 'Daily ROI: ' + newRoi + '%';
+      }
+
+      alert("User Dashboard Updated Successfully!");
+    }
   </script>
 
 </body>
