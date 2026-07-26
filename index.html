@@ -16,6 +16,7 @@
       --primary-hover: #1d4ed8;
       --success: #10b981;
       --warning: #f59e0b;
+      --danger: #ef4444;
       --text: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -43,6 +44,7 @@
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .btn-warning { background: var(--warning); color: #000; }
+    .btn-danger { background: var(--danger); color: #fff; }
 
     /* Floating WhatsApp Button */
     .whatsapp-btn {
@@ -108,6 +110,12 @@
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
     .form-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; }
+    
+    .admin-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+    }
   </style>
 </head>
 <body>
@@ -165,9 +173,10 @@
       </div>
     </header>
 
-    <!-- ADMIN CONTROL PANEL (HIDDEN BY DEFAULT) -->
+    <!-- ADMIN CONTROL PANEL -->
     <div id="admin-panel">
       <div class="section-title" style="color: var(--warning);">⚙️ Admin Management Panel</div>
+      
       <div class="form-group">
         <label>Total Balance ($)</label>
         <input type="number" id="input-balance" placeholder="e.g. 500">
@@ -180,7 +189,29 @@
         <label>Daily ROI (%)</label>
         <input type="number" id="input-roi" placeholder="e.g. 2.5">
       </div>
-      <button class="btn btn-warning" style="width: 100%;" onclick="saveAdminData()">Update User Dashboard</button>
+      <button class="btn btn-warning" style="width: 100%; margin-bottom: 10px;" onclick="saveAdminData()">Update User Dashboard</button>
+
+      <!-- REGISTERED USERS SECTION -->
+      <div class="admin-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div class="section-title" style="color: var(--primary); margin: 0;">👥 Registered Users</div>
+          <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.75rem;" onclick="clearAllUsers()">Clear All Users</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Date Registered</th>
+            </tr>
+          </thead>
+          <tbody id="registered-users-table">
+            <tr>
+              <td colspan="3" style="text-align: center; color: var(--text-muted);">No users registered yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- MAIN DASHBOARD STATS -->
@@ -255,10 +286,11 @@
   </a>
 
   <script>
-    // Load saved balances and login state on startup
+    // Load saved data and login state on startup
     window.onload = function() {
       checkLoginState();
       loadDashboardData();
+      renderAdminUsers();
     };
 
     function loadDashboardData() {
@@ -271,7 +303,6 @@
       document.getElementById('user-roi').innerText = 'Daily ROI: ' + roi + '%';
     }
 
-    // Switch between Login and Sign Up tabs
     function switchAuthTab(type) {
       if (type === 'login') {
         document.getElementById('tab-login').classList.add('active');
@@ -286,19 +317,42 @@
       }
     }
 
-    // Handle Authentication Local Storage
     function handleAuth(event, type) {
       event.preventDefault();
+      let registeredUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
+
       if (type === 'signup') {
         const name = document.getElementById('signup-name').value;
         const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        const newUser = {
+          name: name,
+          email: email,
+          password: password,
+          date: new Date().toLocaleDateString()
+        };
+
+        // Save to users array
+        registeredUsers.push(newUser);
+        localStorage.setItem('registered_users', JSON.stringify(registeredUsers));
+
+        // Set as active logged in user
         localStorage.setItem('auth_user', JSON.stringify({ name, email }));
       } else {
         const email = document.getElementById('login-email').value;
-        const name = email.split('@')[0];
-        localStorage.setItem('auth_user', JSON.stringify({ name, email }));
+        const existingUser = registeredUsers.find(u => u.email === email);
+
+        if (existingUser) {
+          localStorage.setItem('auth_user', JSON.stringify({ name: existingUser.name, email: existingUser.email }));
+        } else {
+          const name = email.split('@')[0];
+          localStorage.setItem('auth_user', JSON.stringify({ name, email }));
+        }
       }
+
       checkLoginState();
+      renderAdminUsers();
     }
 
     function checkLoginState() {
@@ -331,32 +385,50 @@
       }
     }
 
-    // Open Admin Panel with Password
+    function renderAdminUsers() {
+      const usersTable = document.getElementById('registered-users-table');
+      const registeredUsers = JSON.parse(localStorage.getItem('registered_users')) || [];
+
+      if (registeredUsers.length === 0) {
+        usersTable.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No users registered yet.</td></tr>`;
+        return;
+      }
+
+      usersTable.innerHTML = registeredUsers.map(user => `
+        <tr>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td>${user.date || 'N/A'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function clearAllUsers() {
+      if (confirm("Are you sure you want to delete all registered users from local storage?")) {
+        localStorage.removeItem('registered_users');
+        renderAdminUsers();
+      }
+    }
+
     function openAdminModal() {
       const password = prompt("Enter Admin Password:");
-      if (password === "1234") { // DEFAULT ADMIN PASSWORD IS 1234
+      if (password === "1234") {
         const panel = document.getElementById('admin-panel');
         panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        renderAdminUsers();
       } else if (password !== null) {
         alert("Incorrect Admin Password!");
       }
     }
 
-    // Save Admin Data to Dashboard
     function saveAdminData() {
       const newBalance = document.getElementById('input-balance').value;
       const newReturns = document.getElementById('input-returns').value;
       const newRoi = document.getElementById('input-roi').value;
 
-      if (newBalance !== "") {
-        localStorage.setItem('user_balance', newBalance);
-      }
-      if (newReturns !== "") {
-        localStorage.setItem('user_returns', newReturns);
-      }
-      if (newRoi !== "") {
-        localStorage.setItem('user_roi', newRoi);
-      }
+      if (newBalance !== "") localStorage.setItem('user_balance', newBalance);
+      if (newReturns !== "") localStorage.setItem('user_returns', newReturns);
+      if (newRoi !== "") localStorage.setItem('user_roi', newRoi);
 
       loadDashboardData();
       alert("User Dashboard Updated Successfully!");
