@@ -87,6 +87,28 @@
       </div>
     </div>
 
+    <!-- FOREX TRADING CHART -->
+    <div class="card">
+      <div class="section-title">Live Forex Market</div>
+      <div class="tradingview-widget-container" style="height: 450px; width: 100%;">
+        <div class="tradingview-widget-container__widget" style="height: calc(100% - 32px); width: 100%;"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+        {
+          "autosize": true,
+          "symbol": "FX:EURUSD",
+          "interval": "D",
+          "timezone": "Etc/UTC",
+          "theme": "dark",
+          "style": "1",
+          "locale": "en",
+          "allow_symbol_change": true,
+          "calendar": false,
+          "support_host": "https://www.tradingview.com"
+        }
+        </script>
+      </div>
+    </div>
+
     <div class="card">
       <div class="section-title">Available Trading Packages</div>
       <div class="plan-card">
