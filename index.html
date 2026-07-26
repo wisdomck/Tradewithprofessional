@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trade With Professional | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 900px; display: flex; flex-direction: flex-direction; flex-flow: column; gap: 20px; }
+
+    /* Header */
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .logo { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+    .user-profile { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+
+    /* Stats Grid */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+    .card label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .card .val { font-size: 1.75rem; font-weight: 800; margin-top: 8px; color: var(--text); }
+    .card .sub { font-size: 0.8rem; color: var(--success); margin-top: 4px; font-weight: 600; }
+
+    /* Actions */
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 0.9rem; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+
+    /* Plans */
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+    .plan-card { display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #0f172a; margin-bottom: 10px; }
+    .plan-info h4 { font-size: 1rem; color: var(--text); }
+    .plan-info p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Table */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { text-align: left; padding: 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo">📈 TradeWithProfessional</div>
+      <div class="user-profile">
+        <div class="avatar">M</div>
+        <span style="font-weight: 600; font-size: 0.9rem;">Member</span>
+      </div>
+    </header>
+
+    <div class="grid-2">
+      <div class="card">
+        <label>Total Balance</label>
+        <div class="val">$0.00</div>
+        <div class="sub">Active Account</div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="alert('Deposit feature coming soon!')">Deposit</button>
+          <button class="btn btn-secondary" onclick="alert('Withdraw feature coming soon!')">Withdraw</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Estimated Returns</label>
+        <div class="val" style="color: var(--success);">$0.00</div>
+        <div class="sub">Daily ROI: 0%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Available Trading Packages</div>
+      <div class="plan-card">
+        <div class="plan-info">
+          <h4>Starter Tier</h4>
+          <p>Daily ROI Yield • Flexible Term</p>
+        </div>
+        <button class="btn btn-primary" style="padding: 8px 16px;">Select</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-info">
+          <h4>Pro Trader Tier</h4>
+          <p>High ROI Yield • Premium Benefits</p>
+        </div>
+        <button class="btn btn-primary" style="padding: 8px 16px;">Select</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Transaction History</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Account Setup</td>
+            <td>$0.00</td>
+            <td><span class="badge badge-success">Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
